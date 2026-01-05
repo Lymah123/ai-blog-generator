@@ -8,7 +8,7 @@ engine = create_engine(
  pool_pre_ping=True,
  pool_size=10,
  max_overflow=20,
- echo=settings.ENVIRONMENT == "development"
+ echo=settings.APP_ENVIRONMENT == "development"
  )
 
 # Create SessionLocal

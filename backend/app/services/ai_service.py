@@ -1,31 +1,45 @@
 import requests
+import time
 from typing import Dict
-from app.config import Settings
+from app.config import settings
 from app.utils.post_processor import PostProcessor
 from app.services.seo_service import SEOService
 
 class HuggingFaceService:
-    """Hugging Face API integration for blog generation."""
+    """Hugging Face API integration using the Unified Inference Router."""
+    
     def __init__(self):
-        self.api_url = f"https://api-inference.huggingface.co/models/{settings.HUGGINGFACE_MODEL}"
-        self.headers =  {"Authorization": f"Bearer {settings.HUGGINGFACE_API_KEY}"}
+        self.api_url = "https://router.huggingface.co/v1/chat/completions"
+        self.headers = {
+            "Authorization": f"Bearer {settings.HUGGINGFACE_API_KEY}",
+            "Content-Type": "application/json"
+        }
         self.post_processor = PostProcessor()
         self.seo_service = SEOService()
 
     def generate_blog(self, topic: str, tone: str, length: str, keywords: str = None) -> Dict:
-        """Generate complete blog post"""
-
-        # Build prompt 
+        """Main entry point to generate and process a blog post."""
+        
+        # Build prompt
         prompt = self._build_prompt(topic, tone, length, keywords)
-
+        
         # Generate content
         raw_content = self._call_api(prompt)
-
-        # Post-process content
+        
+        # Validate we got content
+        if not raw_content or len(raw_content.strip()) < 100:
+            raise Exception("Generated content is too short or empty. Please try again.")
+        
+        # Process content
         cleaned_content = self.post_processor.clean_content(raw_content)
         title, content = self.post_processor.extract_title_and_content(cleaned_content, topic)
+        
+        # Validate processed content
+        if not content or len(content.strip()) < 50:
+            raise Exception("Failed to extract valid content. Please try again.")
+        
         formatted_content = self.post_processor.add_formatting(content)
-
+        
         # Calculate metrics
         word_count = self.post_processor.count_words(formatted_content)
         seo_score = self.seo_service.calculate_score(formatted_content, title, keywords)
@@ -33,76 +47,91 @@ class HuggingFaceService:
         return {
             "title": title,
             "content": formatted_content,
+            "keywords": keywords,
             "word_count": word_count,
-            "seo_score": seo_score
+            "seo_score": seo_score 
         }
-    def _build_prompt(self, topic: str, tone: str, length: str, keywords: str = None) -> str:
-        """Build optimized prompt"""
 
-        tone_mapped = {
-            "professional": "authoritative, polished, business-appropriate",
+    def _build_prompt(self, topic: str, tone: str, length: str, keywords: str = None) -> str:
+        """Constructs an optimized prompt for blog generation."""
+        
+        tone_map = {
+            "professional": "authoritative, polished, and business-appropriate",
             "casual": "friendly, conversational, and relatable",
             "technical": "detailed, precise, and technically accurate",
-            "educational": "informative, clear, and easy to understand"
+            "educational": "clear, informative, and easy to understand"
         }
-
+        
         length_map = {
-            "short": "600-900 words",
+            "short": "600-800 words",
             "medium": "1000-1500 words",
             "long": "1800-2500 words"
         }
+        
         tone_desc = tone_map.get(tone, tone_map["professional"])
         length_desc = length_map.get(length, length_map["medium"])
-        keywords_instruction = f"\nKeywords to include: {keywords}" if keywords else ""
+        keyword_instruction = f"\n- Include these keywords naturally: {keywords}" if keywords else ""
 
-        prompt = f"""<s>[INST] Write a comprehensive blog post on the following topic.
+        return f"""You are an expert blog content writer. Write a comprehensive, well-structured blog post.
 
-Topic: {topic}
-Tone: {tone_desc}
-Target Length: {length_desc}{keywords_instruction}
+**Topic:** {topic}
+**Tone:** {tone_desc}
+**Target Length:** {length_desc}{keyword_instruction}
 
-Requirements:
-1. Create an engaging, SEO-friendly title.
-2. Write a compelling introduction
-3. Organize content with clear subheadings (Use ## for subheadings).and
-4. Include practical examples and insights.
-5. End with a strong conclusion.
+**Requirements:**
+1. Create an engaging, SEO-friendly title
+2. Write a compelling introduction that hooks the reader
+3. Organize content with clear subheadings (use ## for H2 headings)
+4. Include practical examples, insights, and actionable advice
+5. End with a strong conclusion and call-to-action
+6. Make the content informative, engaging, and ready to publish
 
-Format your response as:
-# [Title]
+**Format:**
+# [Your SEO-Optimized Title]
 
-## [Introduction]
+[Engaging introduction paragraph]
 
-## [Section 1 Title]
-[Content]
+## [First Main Section]
+[Detailed content with examples]
 
-## [Section 2 Title]
-[Content]
+## [Second Main Section]
+[Detailed content with examples]
 
-## [Section 3 Title]
-[Content]
+## [Third Main Section]
+[Detailed content with examples]
 
 ## Conclusion
-[Conclusion]
+[Summary and call-to-action]
 
-Write the blog post: [/INST]"""
+Write the complete blog post now:"""
+
+    def _call_api(self, prompt: str, max_retries: int = 3) -> str:
+        """Calls the HF Router with proper error handling."""
         
-        return prompt
-    def _call_api(self, prompt: str, max_retries: int = 2) -> str:
-        """Call Hugging Face Inference API"""
+        # Model ID extraction
+        model_id = settings.HUGGINGFACE_MODEL.split(':')[0].strip()
+
         payload = {
-            "inputs": prompt,
-            "parameters": {
-                "max_new_tokens": 2048,
-                "temperature": 0.7,
-                "top_p": 0.92,
-                "do_sample": True,
-                "return_full_text": False
-            }
+            "model": model_id,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are an expert blog writer who creates engaging, SEO-optimized content."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "max_tokens": 2500,
+            "temperature": 0.7,
+            "top_p": 0.9
         }
 
-        for attempt in range(max_retries + 1):
+        for attempt in range(max_retries):
             try:
+                print(f"[Attempt {attempt + 1}/{max_retries}] Calling HF Router with model: {model_id}")
+                
                 response = requests.post(
                     self.api_url,
                     headers=self.headers,
@@ -110,28 +139,63 @@ Write the blog post: [/INST]"""
                     timeout=120
                 )
 
+                # Handle model loading
                 if response.status_code == 503:
-                    raise Exception("Model is loading, please wait 20-30 seconds and try again.")
-                
-                response.raise_for_status()
-                result = response.json()
+                    print("Model is warming up... waiting 30 seconds")
+                    time.sleep(30)
+                    continue
 
-                if isinstance(result, list) and len(result) > 0:
-                    return result[0].get("generated_text", "")
-                elif isinstance(result, dict):
-                    return result.get("generated_text", "")
-                else:
-                    raise Exception("Unexpected API response format.")
+                # Handle rate limiting
+                if response.status_code == 429:
+                    wait_time = int(response.headers.get('Retry-After', 30))
+                    print(f"Rate limited. Waiting {wait_time} seconds...")
+                    time.sleep(wait_time)
+                    continue
+
+                # Handle errors
+                if response.status_code != 200:
+                    try:
+                        error_detail = response.json()
+                    except:
+                        error_detail = response.text
+                    
+                    if response.status_code == 400 and "not a chat model" in str(error_detail):
+                        raise Exception(
+                            f"Model '{model_id}' is not supported. "
+                            f"Update HUGGINGFACE_MODEL in .env to: 'meta-llama/Llama-3.3-70B-Instruct'"
+                        )
+                    
+                    raise Exception(f"HF API Error ({response.status_code}): {error_detail}")
+
+                # Parse successful response
+                result = response.json()
+                
+                if "choices" not in result or len(result["choices"]) == 0:
+                    raise Exception(f"Unexpected API response format: {result}")
+                
+                content = result["choices"][0]["message"]["content"]
+                
+                if not content or len(content.strip()) < 50:
+                    raise Exception("API returned empty or invalid content")
+                
+                print(f"✓ Successfully generated {len(content)} characters")
+                return content
+
             except requests.exceptions.Timeout:
-                if attempt < max_retries:
+                print(f"Request timed out")
+                if attempt < max_retries - 1:
+                    time.sleep(10)
                     continue
-                raise Exception("Request timed out. Please try again.")
+                raise Exception("Request timed out after multiple attempts")
+                
             except requests.exceptions.RequestException as e:
-                if attempt < max_retries:
+                print(f"Request failed: {str(e)}")
+                if attempt < max_retries - 1:
+                    time.sleep(5)
                     continue
-                raise Exception(f"API request error: {str(e)}")
-            raise Exception("Failed after multiple retries.")
-        
-        # Global instance
-        hf_service = HuggingFaceService()
-              
+                raise Exception(f"Connection error: {str(e)}")
+
+        raise Exception("Failed to generate content after multiple retries")
+
+# Global instance
+hf_service = HuggingFaceService()

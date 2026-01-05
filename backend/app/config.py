@@ -3,7 +3,7 @@ from typing import List
 
 class Settings(BaseSettings):
  # Database
- database_url: str 
+ DATABASE_URL: str 
 
  # Hugging Face
  HUGGINGFACE_API_KEY: str
@@ -29,4 +29,4 @@ class Settings(BaseSettings):
     extra="ignore"
     )
  
- settings = Settings()
+settings = Settings()
