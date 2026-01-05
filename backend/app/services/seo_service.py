@@ -69,7 +69,8 @@ class SEOService:
         score += 7
      if has_conclusion:
         score += 8
-        return min(round(score, 2), 100.0)
+     
+     return min(round(score, 2), 100.0)
      
  @staticmethod 
  def get_recommendations(score: float) -> list:

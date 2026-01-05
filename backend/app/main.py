@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
@@ -19,11 +19,11 @@ async def lifespan(app: APIRouter):
 
 # Initialize FastAPI app
 app = FastAPI(
-    title=settings.APP.NAME,
-    version=settings.APP.VERSION,
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
     lifespan=lifespan,
-    docs_url="/docs" if settings.ENVIRONMENT == "development" else None,
-    redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None
+    docs_url="/docs" if settings.APP_ENVIRONMENT == "development" else None,
+    redoc_url="/redoc" if settings.APP_ENVIRONMENT == "development" else None
 )
 
 # CORS Middleware
@@ -43,12 +43,11 @@ app.include_router(routes.router, prefix="/api/v1", tags=["Blogs"])
 async def root():
     return {
         "message": "AI Blog Generator API",
-        "version": settings.APP.VERSION,
+        "version": settings.APP_VERSION,
         "docs": "/docs"
         }
 
 # Health check endpoint
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "environment": settings.ENVIRONMENT}
-
+    return {"status": "healthy", "environment": settings.APP_ENVIRONMENT}
