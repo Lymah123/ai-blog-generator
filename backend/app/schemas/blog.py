@@ -14,7 +14,7 @@ class BlogGenerateRequest(BaseModel):
                 "topic": "The Future of Artificial Intelligence",
                 "tone": "Professional",
                 "length": "Medium",
-                "Keywords": "AI, Machine Learning, Automation"
+                "keywords": "AI, Machine Learning, Automation"
             }
         }
     )
