@@ -37,7 +37,7 @@ function App() {
       setCurrentBlog(result);
       setSuccess(true);
       setRefreshHistory((prev) => prev + 1); // Trigger history refresh
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
@@ -74,20 +74,19 @@ function App() {
             {/* API Status Indicator */}
             <div className="flex items-center gap-2">
               <div
-                className={`w-2 h-2 rounded-full ${
-                  apiStatus === 'connected'
+                className={`w-2 h-2 rounded-full ${apiStatus === 'connected'
                     ? 'bg-green-500'
                     : apiStatus === 'disconnected'
-                    ? 'bg-red-500'
-                    : 'bg-yellow-500'
-                }`}
+                      ? 'bg-red-500'
+                      : 'bg-yellow-500'
+                  }`}
               />
               <span className="text-sm text-gray-600">
                 {apiStatus === 'connected'
                   ? 'Connected'
                   : apiStatus === 'disconnected'
-                  ? 'Disconnected'
-                  : 'Checking...'}
+                    ? 'Disconnected'
+                    : 'Checking...'}
               </span>
             </div>
           </div>
@@ -171,7 +170,7 @@ function App() {
             <p>
               Built with ❤️ using React, FastAPI, and Hugging Face •{' '}
               <a
-                href="https://github.com"
+                href="https://github.com/Lymah123/ai-blog-generator"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-600 hover:text-primary-700 font-medium"
