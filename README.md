@@ -188,6 +188,11 @@ npm run dev
    - Backend API: http://localhost:8000
    - API Docs: http://localhost:8000/docs
 
+### Deployment URLs
+- API Root: https://ai-blog-generator-production-bd0c.up.railway.app/
+- API Docs: https://ai-blog-generator-production-bd0c.up.railway.app/docs
+
+
 ### Generating Your First Blog
 
 1. Enter a blog topic (e.g., "The Future of Artificial Intelligence")
