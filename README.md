@@ -191,6 +191,8 @@ npm run dev
 ### Deployment URLs
 - API Root: https://ai-blog-generator-production-bd0c.up.railway.app/
 - API Docs: https://ai-blog-generator-production-bd0c.up.railway.app/docs
+- Production: https://frontend-2t151l0f1-lymahs-projects.vercel.app
+- Alias: https://frontend-ochre-rho-71.vercel.app
 
 
 ### Generating Your First Blog
