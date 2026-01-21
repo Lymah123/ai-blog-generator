@@ -10,7 +10,7 @@ class Settings(BaseSettings):
  HUGGINGFACE_MODEL: str = "mistralai/Mistral-7B-Instruct-v0.1"
 
  # CORS
- CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+ CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173,https://frontend-ochre-rho-71.vercel.app,https://frontend-2t151l0f1-lymahs-projects.vercel.app"
 
  # APP
  APP_NAME: str = "AI Blog Generator API"

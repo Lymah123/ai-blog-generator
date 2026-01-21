@@ -168,7 +168,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-sm text-gray-600">
             <p>
-              Built by using React, FastAPI, and Hugging Face •{' '}
+              Built using React, FastAPI, and Hugging Face •{' '}
               <a
                 href="https://github.com/Lymah123/ai-blog-generator"
                 target="_blank"
