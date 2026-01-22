@@ -63,32 +63,57 @@ class HuggingFaceService:
         }
         
         length_map = {
-            "short": {"range": "600-800 words", "sections": 3},
-            "medium": {"range": "1000-1500 words", "sections": 5},
-            "long": {"range": "1800-2500 words", "sections": 7}
+            "short": {"range": "600-800 words", "min": 600, "sections": 3, "section_words": 200},
+            "medium": {"range": "1000-1500 words", "min": 1000, "sections": 5, "section_words": 250},
+            "long": {"range": "1800-2500 words", "min": 1800, "sections": 7, "section_words": 300}
         }
         
         tone_desc = tone_map.get(tone, tone_map["professional"])
         length_info = length_map.get(length, length_map["medium"])
         length_desc = length_info["range"]
+        min_words = length_info["min"]
         num_sections = length_info["sections"]
-        keyword_instruction = f"\n- Include these keywords naturally: {keywords}" if keywords else ""
+        section_words = length_info["section_words"]
+        keyword_instruction = f"\n- Include these keywords naturally throughout the content: {keywords}" if keywords else ""
 
-        return f"""You are an expert blog content writer. Write a comprehensive, well-structured blog post.
+        return f"""You are an expert blog content writer specializing in long-form, comprehensive content.
+
+**CRITICAL INSTRUCTION:** You MUST write AT LEAST {min_words} words. Count as you write to ensure you meet this requirement.
 
 **Topic:** {topic}
 **Tone:** {tone_desc}
-**Target Length:** {length_desc} (STRICT REQUIREMENT - Write at least {length_desc.split('-')[0]} words){keyword_instruction}
+**Target Length:** {length_desc} (MINIMUM {min_words} words - DO NOT STOP UNTIL YOU REACH THIS){keyword_instruction}
 
-**Requirements:**
-1. Create an engaging, SEO-friendly title
-2. Write a compelling introduction that hooks the reader (150-200 words)
-3. Create exactly {num_sections} main sections with clear subheadings (use ## for H2 headings)
-4. Each main section should be 150-250 words with detailed examples and insights
-5. Include practical examples, statistics, and actionable advice
-6. End with a strong conclusion and call-to-action (100-150 words)
-7. Make the content informative, engaging, and ready to publish
-8. IMPORTANT: The final post MUST be within the {length_desc} range
+**Detailed Structure (FOLLOW EXACTLY):**
+
+1. **Introduction (200-250 words):**
+   - Hook the reader with an interesting fact or question
+   - Provide context and background
+   - State what the article will cover
+   - Explain why this topic matters
+
+2. **Main Content ({num_sections} sections, EACH section must be {section_words}+ words):**
+   - Create {num_sections} distinct main sections with ## headings
+   - Each section needs multiple paragraphs
+   - Include specific examples, case studies, or data points
+   - Add subsections with ### headings where appropriate
+   - Use bullet points or numbered lists for clarity
+   - Explain concepts thoroughly - don't rush
+
+3. **Conclusion (150-200 words):**
+   - Summarize key takeaways
+   - Provide actionable next steps
+   - Include a compelling call-to-action
+   - End with a thought-provoking statement
+
+**WRITING GUIDELINES:**
+- Write in-depth, detailed paragraphs (4-6 sentences each)
+- Expand on every point with examples and explanations
+- Include relevant statistics, facts, or expert opinions
+- Use transitions between sections
+- Make every section substantial and informative
+- DO NOT write short, superficial content
+- Keep writing until you've provided {min_words}+ words of valuable content
 
 **Format:**
 # [Your SEO-Optimized Title]
