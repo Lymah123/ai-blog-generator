@@ -63,28 +63,32 @@ class HuggingFaceService:
         }
         
         length_map = {
-            "short": "600-800 words",
-            "medium": "1000-1500 words",
-            "long": "1800-2500 words"
+            "short": {"range": "600-800 words", "sections": 3},
+            "medium": {"range": "1000-1500 words", "sections": 5},
+            "long": {"range": "1800-2500 words", "sections": 7}
         }
         
         tone_desc = tone_map.get(tone, tone_map["professional"])
-        length_desc = length_map.get(length, length_map["medium"])
+        length_info = length_map.get(length, length_map["medium"])
+        length_desc = length_info["range"]
+        num_sections = length_info["sections"]
         keyword_instruction = f"\n- Include these keywords naturally: {keywords}" if keywords else ""
 
         return f"""You are an expert blog content writer. Write a comprehensive, well-structured blog post.
 
 **Topic:** {topic}
 **Tone:** {tone_desc}
-**Target Length:** {length_desc}{keyword_instruction}
+**Target Length:** {length_desc} (STRICT REQUIREMENT - Write at least {length_desc.split('-')[0]} words){keyword_instruction}
 
 **Requirements:**
 1. Create an engaging, SEO-friendly title
-2. Write a compelling introduction that hooks the reader
-3. Organize content with clear subheadings (use ## for H2 headings)
-4. Include practical examples, insights, and actionable advice
-5. End with a strong conclusion and call-to-action
-6. Make the content informative, engaging, and ready to publish
+2. Write a compelling introduction that hooks the reader (150-200 words)
+3. Create exactly {num_sections} main sections with clear subheadings (use ## for H2 headings)
+4. Each main section should be 150-250 words with detailed examples and insights
+5. Include practical examples, statistics, and actionable advice
+6. End with a strong conclusion and call-to-action (100-150 words)
+7. Make the content informative, engaging, and ready to publish
+8. IMPORTANT: The final post MUST be within the {length_desc} range
 
 **Format:**
 # [Your SEO-Optimized Title]
@@ -116,14 +120,14 @@ Write the complete blog post now:"""
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are an expert blog writer who creates engaging, SEO-optimized content."
+                    "content": "You are an expert blog writer who creates engaging, SEO-optimized content. You always write the exact word count requested."
                 },
                 {
                     "role": "user",
                     "content": prompt
                 }
             ],
-            "max_tokens": 2500,
+            "max_tokens": 4000,
             "temperature": 0.7,
             "top_p": 0.9
         }
