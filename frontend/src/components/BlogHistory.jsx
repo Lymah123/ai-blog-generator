@@ -55,7 +55,7 @@ const BlogHistory = ({ onSelectBlog, refreshTrigger }) => {
     return (
       <div className="card">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+          <Loader2 data-testid="loading-spinner" className="w-8 h-8 text-primary-600 animate-spin" />
         </div>
       </div>
     );
@@ -120,7 +120,7 @@ const BlogHistory = ({ onSelectBlog, refreshTrigger }) => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
                     {blog.title || blog.topic}
                   </h3>
-                  
+
                   <p className="text-sm text-gray-600 mb-3">
                     {truncateText(blog.content.replace(/#{1,6}\s/g, '').replace(/\n/g, ' '), 150)}
                   </p>
