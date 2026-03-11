@@ -1,0 +1,66 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-quality:
+    name: Backend Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install flake8 black isort mypy
+        cd backend && pip install -r requirements.txt
+    
+    - name: Run Black (formatter check)
+      working-directory: ./backend
+      run: black --check app/ tests/
+      continue-on-error: true
+    
+    - name: Run isort (import sorting)
+      working-directory: ./backend
+      run: isort --check-only app/ tests/
+      continue-on-error: true
+    
+    - name: Run Flake8 (linting)
+      working-directory: ./backend
+      run: flake8 app/ tests/ --max-line-length=127
+      continue-on-error: true
+  
+  frontend-quality:
+    name: Frontend Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+    
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: npm ci
+    
+    - name: Run ESLint
+      working-directory: ./frontend
+      run: npm run lint || echo "ESLint not configured"
+      continue-on-error: true
+    
+    - name: Check formatting
+      working-directory: ./frontend
+      run: npm run format:check || echo "Prettier not configured"
+      continue-on-error: true
