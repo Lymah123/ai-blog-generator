@@ -9,6 +9,13 @@
 
 ![AI Blog Generator Demo](./frontend/src/assets/demo.png)
 
+## 📊 Test Coverage
+
+| Component | Coverage |
+|-----------|----------|
+| Backend   | ![Coverage](https://img.shields.io/codecov/c/github/yourusername/ai-blog-generator/main?flag=backend&label=Backend) |
+| Frontend  | ![Coverage](https://img.shields.io/codecov/c/github/yourusername/ai-blog-generator/main?flag=frontend&label=Frontend) |
+
 ## 📋 Table of Contents
 
 - [Features](#-features)

@@ -1,0 +1,33 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend to Railway
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Railway
+      run: |
+        echo "Backend deployed automatically via Railway GitHub integration"
+        echo "Railway URL: ${{ secrets.RAILWAY_URL }}"
+  
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Vercel
+      run: |
+        echo "Frontend deployed automatically via Vercel GitHub integration"
+        echo "Vercel URL: ${{ secrets.VERCEL_URL }}"
