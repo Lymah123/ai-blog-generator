@@ -10,6 +10,10 @@ jobs:
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
+    env:
+      # CI-safe defaults so app settings can initialize during test imports.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci_test_db
+      HUGGINGFACE_API_KEY: test-key
     
     steps:
     - uses: actions/checkout@v4
