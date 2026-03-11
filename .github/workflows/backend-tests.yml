@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # CI-safe defaults so app settings can initialize during test imports.
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci_test_db
+      DATABASE_URL: sqlite:///./ci_test.db
       HUGGINGFACE_API_KEY: test-key
     
     strategy:
