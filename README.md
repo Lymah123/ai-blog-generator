@@ -360,27 +360,39 @@ VITE_API_URL=https://your-backend.railway.app
 
 ```
 ai-blog-generator/
+├── .github/
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/
+│       ├── backend-tests.yml
+│       ├── frontend-tests.yml
+│       ├── ci.yml
+│       ├── code-quality.yml
+│       └── deply.yml
 ├── backend/
 │   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py                 # FastAPI application entry
-│   │   ├── config.py               # Configuration management
-│   │   ├── database.py             # Database connection
+│   │   ├── api/
+│   │   │   └── routes.py           # API endpoints
 │   │   ├── models/
 │   │   │   └── blog.py             # SQLAlchemy models
 │   │   ├── schemas/
 │   │   │   └── blog.py             # Pydantic schemas
-│   │   ├── api/
-│   │   │   └── routes.py           # API endpoints
 │   │   ├── services/
 │   │   │   ├── ai_service.py       # Hugging Face integration
 │   │   │   └── seo_service.py      # SEO scoring logic
-│   │   └── utils/
-│   │       └── post_processor.py   # Content processing
+│   │   ├── utils/
+│   │   │   └── post_processor.py   # Content processing
+│   │   ├── config.py               # Configuration management
+│   │   ├── database.py             # Database connection
+│   │   └── main.py                 # FastAPI application entry
+│   ├── tests/
+│   │   ├── integration/
+│   │   └── unit/
+│   ├── conftest.py
+│   ├── pyproject.toml
+│   ├── pytest.ini
 │   ├── requirements.txt
-│   ├── .env.example
-│   └── railway.json
-│
+│   ├── railway.json
+│   └── .env.example
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
@@ -389,6 +401,12 @@ ai-blog-generator/
 │   │   │   └── BlogHistory.jsx     # Blog history list
 │   │   ├── services/
 │   │   │   └── api.js              # API client
+│   │   ├── tests/
+│   │   │   ├── components/
+│   │   │   ├── services/
+│   │   │   ├── utils/
+│   │   │   ├── setup.js
+│   │   │   └── test-utils.jsx
 │   │   ├── utils/
 │   │   │   └── helpers.js          # Utility functions
 │   │   ├── App.jsx                 # Main application
@@ -396,10 +414,15 @@ ai-blog-generator/
 │   │   └── index.css               # Tailwind styles
 │   ├── public/
 │   ├── package.json
+│   ├── package-lock.json
 │   ├── vite.config.js
+│   ├── eslint.config.js
 │   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   ├── vercel.json
 │   └── .env.example
-│
+├── codecov.yml
+├── LICENCE
 └── README.md
 ```
 ## 🎯 Key Features Breakdown
