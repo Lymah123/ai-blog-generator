@@ -13,8 +13,8 @@
 
 | Component | Coverage |
 |-----------|----------|
-| Backend   | ![Coverage](https://img.shields.io/codecov/c/github/yourusername/ai-blog-generator/main?flag=backend&label=Backend) |
-| Frontend  | ![Coverage](https://img.shields.io/codecov/c/github/yourusername/ai-blog-generator/main?flag=frontend&label=Frontend) |
+| Backend   | ![Coverage](https://img.shields.io/codecov/c/github/Lymah123/ai-blog-generator/main?flag=backend&label=Backend) |
+| Frontend  | ![Coverage](https://img.shields.io/codecov/c/github/Lymah123/ai-blog-generator/main?flag=frontend&label=Frontend) |
 
 ## 📋 Table of Contents
 
